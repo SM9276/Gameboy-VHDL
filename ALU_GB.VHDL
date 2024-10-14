@@ -51,7 +51,6 @@ end Component ;
 
 -- xor component declaration
 Component xorN is
-GENERIC ( N : INTEGER := 32) ; -- bit width
 PORT (
 --- Input ---
     A : IN std_logic_vector (15 downto 0) ;
