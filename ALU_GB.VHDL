@@ -21,14 +21,13 @@ PORT (
     control: IN std_logic_vector(4 downto 0);
 --- Output ---
     out1 :   OUT std_logic_vector (15 downto 0)
-    carry :  Out std_logic
 ) ;
-end aluN ;
+end ALU_GB;
 
-architecture structural of aluN is
+architecture structural of ALU_GB is
 
 -- or component declaration
-Component or is
+Component or_GB is
 PORT (
 --- Input ---
     A : IN std_logic_vector (15 downto 0) ;
@@ -39,7 +38,7 @@ PORT (
 end Component ;
 
 -- and component declaration
-Component andN is
+Component and_GB is
 PORT (
 --- Input ---
     A : IN std_logic_vector (15 downto 0) ;
@@ -50,7 +49,7 @@ PORT (
 end Component ;
 
 -- xor component declaration
-Component xorN is
+Component xor_GB is
 PORT (
 --- Input ---
     A : IN std_logic_vector (15 downto 0) ;
@@ -61,64 +60,35 @@ PORT (
 end Component ;
 
 -- sll component declaration
-Component sllN is
-GENERIC ( N : INTEGER := 32; -- bit width
-          M : INTEGER := 5) ; --shift bits
+Component sll_GB is
 PORT (
 --- Input ---
     A : IN std_logic_vector (15 downto 0) ;
-    SHIFT_AMT : IN std_logic_vector (M -1 downto 0) ;
+    SHIFT_AMT : IN std_logic_vector (3 downto 0) ;
 --- Output ---
     Y : OUT std_logic_vector (15 downto 0)
 ) ;
 end Component ;
 
 -- srl component declaration
-Component srlN is
-GENERIC ( N : INTEGER := 32; -- bit width
-          M : INTEGER := 5) ; --shift bits
+Component srl_GB is
 PORT (
 --- Input ---
     A : IN std_logic_vector (15 downto 0) ;
-    SHIFT_AMT : IN std_logic_vector (M -1 downto 0) ;
+    SHIFT_AMT : IN std_logic_vector (3 downto 0) ;
 --- Output ---
     Y : OUT std_logic_vector (15 downto 0)
 ) ;
 end Component ;
 
 -- sra component declaration
-Component sraN is
-GENERIC ( N : INTEGER := 32; -- bit width
-          M : INTEGER := 5 ) ; --shift bits
+Component sra_GB is
 PORT (
 --- Input ---
     A : IN std_logic_vector (15 downto 0) ;
-    SHIFT_AMT : IN std_logic_vector (M -1 downto 0) ;
+    SHIFT_AMT : IN std_logic_vector (3 downto 0) ;
 --- Output ---    
     Y : OUT std_logic_vector (15 downto 0)
-) ;
-end Component ;
-
--- RippleCarryFullAdder component declaration
-Component RippleCarryFullAdder is
-PORT (
---- Input ---
-    A : IN std_logic_vector (15 downto 0);
-    B : IN std_logic_vector (15 downto 0);
-    OP : IN std_logic;
---- Output ---
-    Sum : OUT std_logic_vector (15 downto 0)
-) ;
-end Component ;
-
--- RippleCarryFullAdder component declaration
-Component Multiplier is
-PORT (
----- Inputs ------
-		A    : in std_logic_vector((N/2)-1 downto 0);
-		B    : in std_logic_vector((N/2)-1 downto 0);
----- Outputs ------
-        Product    : out std_logic_vector(15 downto 0)
 ) ;
 end Component ;
 
@@ -130,44 +100,31 @@ signal xor_result : std_logic_vector (15 downto 0) ;
 signal srl_result : std_logic_vector (15 downto 0) ;
 signal sra_result : std_logic_vector (15 downto 0) ;
 signal rcfa_result: std_logic_vector (15 downto 0) ;
-signal mul_result : std_logic_vector (15 downto 0) ;
+
 begin
 -- Instantiate the or , using component 
-    or_comp : orN
-        generic map ( N => N )
+    or_comp : or_GB
         port map ( A => in1 , B => in2, Y => or_result ) ;
         
 -- Instantiate the and , using component 
-    and_comp : andN
-        generic map ( N => N )
+    and_comp : and_GB
         port map ( A => in1 , B => in2, Y => and_result ) ;       
 -- Instantiate the xor , using component 
-    xor_comp : xorN
-        generic map ( N => N )
+    xor_comp : xor_GB
         port map ( A => in1 , B => in2, Y => xor_result ) ; 
 
 -- Instantiate the logical left shift , using component 
-    sll_comp : sllN
-        generic map ( N => N, M => M )
-        port map ( A => in1, SHIFT_AMT => in2(M-1 downto 0), Y => sll_result ) ; 
+    sll_comp : sll_GB
+        port map ( A => in1, SHIFT_AMT => in2(3 downto 0), Y => sll_result ) ; 
 
 -- Instantiate the logical right shift , using component 
-    srl_comp : srlN
-        generic map ( N => N, M => M )
-        port map ( A => in1 , SHIFT_AMT => in2(M-1 downto 0), Y => srl_result ) ;
+    srl_comp : srl_GB
+        port map ( A => in1 , SHIFT_AMT => in2(3 downto 0), Y => srl_result ) ;
 -- Instantiate the arithmetic right shift , using component 
-    sra_comp : sraN
-        generic map ( N => N, M => M )
-        port map ( A => in1 , SHIFT_AMT => in2(M-1 downto 0), Y => sra_result ) ; 
--- Instantiate the arithmetic right shift , using component 
-    RippleCarryFullAdder_comp : RippleCarryFullAdder 
-        port map ( A => in1 , B => in2,OP => control(0), Sum => rcfa_result ) ; 
--- Instantiate the arithmetic right shift , using component 
-    Multiplier_comp : Multiplier 
-        port map ( A => in1((N/2)-1 downto 0) , B => in2((N/2)-1 downto 0), Product => mul_result ) ; 
-          
+    sra_comp : sra_GB
+        port map ( A => in1 , SHIFT_AMT => in2(3 downto 0), Y => sra_result ) ;         
 -- Use OP to control which operation to show / perform
-process(control, in1, in2, or_result, and_result, xor_result, sll_result, srl_result, sra_result, rcfa_result, mul_result)
+process(control, in1, in2, or_result, and_result, xor_result, sll_result, srl_result, sra_result, rcfa_result)
 begin
 	case control is
 		when "1000" => out1 <= or_result;  --OR
@@ -176,9 +133,7 @@ begin
 		when "1100" => out1 <= sll_result; --SLL
 		when "1101" => out1 <= srl_result; --SRL
 		when "1110" => out1 <= sra_result; --SRA
-		when "0100" | "0101" => out1 <= rcfa_result;
-		when "0110" => out1 <= mul_result;
-		
+		when "0100" | "0101" => out1 <= rcfa_result; --RCFA		
 		when others => out1 <= (others => '0'); --No selection
 	end case;
 end process;                    
