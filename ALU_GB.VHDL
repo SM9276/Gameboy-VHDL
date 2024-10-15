@@ -19,8 +19,12 @@ PORT (
     in1:     IN std_logic_vector (15 downto 0) ;
     in2:     IN std_logic_vector (15 downto 0) ;
     control: IN std_logic_vector(4 downto 0);
+    inoverflow:   IN std_logic;
+    
 --- Output ---
-    out1 :   OUT std_logic_vector (15 downto 0)
+    out1 :       OUT std_logic_vector (15 downto 0);
+    outflags:    OUT std_logic_vector (15 downto 0);
+    outoverflow: OUT std_logic
 ) ;
 end ALU_GB;
 
