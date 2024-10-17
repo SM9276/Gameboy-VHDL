@@ -6,7 +6,7 @@
 -- Module Name : ALU_GB - structural
 -- Project Name : <Gameboy-VHDL>
 --
--- Description : 16-bit Arithmetic Logic Unit for the GameBoy
+-- Description : 8-bit Arithmetic Logic Unit for the GameBoy
 -- ----------------------------------------------------
 
 library IEEE ;
@@ -16,15 +16,14 @@ use IEEE . NUMERIC_STD .ALL;
 entity ALU_GB is
 PORT (
 --- Input ---
-    in1:     IN std_logic_vector (15 downto 0) ;
-    in2:     IN std_logic_vector (15 downto 0) ;
+    in1:     IN std_logic_vector (7 downto 0) ;
+    in2:     IN std_logic_vector (7 downto 0) ;
     control: IN std_logic_vector(4 downto 0);
-    inoverflow:   IN std_logic;
+    inflags: IN std_logic_vector(7 downto 0);
     
 --- Output ---
-    out1 :       OUT std_logic_vector (15 downto 0);
-    outflags:    OUT std_logic_vector (15 downto 0);
-    outoverflow: OUT std_logic
+    out1 :       OUT std_logic_vector (7 downto 0);
+    outflags:    OUT std_logic_vector (7 downto 0)
 ) ;
 end ALU_GB;
 
@@ -34,10 +33,10 @@ architecture structural of ALU_GB is
 Component or_GB is
 PORT (
 --- Input ---
-    A : IN std_logic_vector (15 downto 0) ;
-    B : IN std_logic_vector (15 downto 0) ;
+    A : IN std_logic_vector (7 downto 0) ;
+    B : IN std_logic_vector (7 downto 0) ;
 --- Output ---
-    Y : OUT std_logic_vector (15 downto 0)
+    Y : OUT std_logic_vector (7 downto 0)
 ) ;
 end Component ;
 
@@ -45,10 +44,10 @@ end Component ;
 Component and_GB is
 PORT (
 --- Input ---
-    A : IN std_logic_vector (15 downto 0) ;
-    B : IN std_logic_vector (15 downto 0) ;
+    A : IN std_logic_vector (7 downto 0) ;
+    B : IN std_logic_vector (7 downto 0) ;
 --- Output ---
-    Y : OUT std_logic_vector (15 downto 0)
+    Y : OUT std_logic_vector (7 downto 0)
 ) ;
 end Component ;
 
@@ -56,21 +55,10 @@ end Component ;
 Component xor_GB is
 PORT (
 --- Input ---
-    A : IN std_logic_vector (15 downto 0) ;
-    B : IN std_logic_vector (15 downto 0) ;
+    A : IN  std_logic_vector (7 downto 0) ;
+    B : IN  std_logic_vector (7 downto 0) ;
 --- Output ---
-    Y : OUT std_logic_vector (15 downto 0)
-) ;
-end Component ;
-
--- sll component declaration
-Component sll_GB is
-PORT (
---- Input ---
-    A : IN std_logic_vector (15 downto 0) ;
-    SHIFT_AMT : IN std_logic_vector (3 downto 0) ;
---- Output ---
-    Y : OUT std_logic_vector (15 downto 0)
+    Y : OUT std_logic_vector (7 downto 0)
 ) ;
 end Component ;
 
@@ -78,10 +66,10 @@ end Component ;
 Component srl_GB is
 PORT (
 --- Input ---
-    A : IN std_logic_vector (15 downto 0) ;
-    SHIFT_AMT : IN std_logic_vector (3 downto 0) ;
+    A : IN std_logic_vector (7 downto 0) ;
+    SHIFT_AMT : IN std_logic_vector (2 downto 0) ;
 --- Output ---
-    Y : OUT std_logic_vector (15 downto 0)
+    Y : OUT std_logic_vector (7 downto 0)
 ) ;
 end Component ;
 
@@ -89,52 +77,94 @@ end Component ;
 Component sra_GB is
 PORT (
 --- Input ---
-    A : IN std_logic_vector (15 downto 0) ;
-    SHIFT_AMT : IN std_logic_vector (3 downto 0) ;
+    A : IN std_logic_vector (7 downto 0) ;
+    SHIFT_AMT : IN std_logic_vector (2 downto 0) ;
 --- Output ---    
-    Y : OUT std_logic_vector (15 downto 0)
+    Y : OUT std_logic_vector (7 downto 0)
 ) ;
 end Component ;
 
+-- RippleCarryFullAdder component declaration
+Component RippleCarryFullAdder_GB is
+PORT (
+--- Input ---
+    A : IN std_logic_vector (7 downto 0);
+    B : IN std_logic_vector (7 downto 0);
+    OP : IN std_logic;
+--- Output ---
+    Sum : OUT std_logic_vector (7 downto 0)
+) ;
+end Component;
+
+-- rl component declaration
+Component rl_GB is
+PORT (
+--- Input ---
+    A : IN std_logic_vector (7 downto 0);
+--- Output ---
+    Y : OUT std_logic_vector (7 downto 0)
+) ;
+end Component;
+
+-- rr component declaration
+Component rr_GB is
+PORT (
+--- Input ---
+    A : IN std_logic_vector (7 downto 0);
+--- Output ---
+    Y : OUT std_logic_vector (7 downto 0)
+) ;
+end Component;
+
+
+
 -- this is done so you can see code with and without components .
-signal or_result  : std_logic_vector (15 downto 0) ;
-signal and_result : std_logic_vector (15 downto 0) ;
-signal sll_result : std_logic_vector (15 downto 0) ;
-signal xor_result : std_logic_vector (15 downto 0) ;
-signal srl_result : std_logic_vector (15 downto 0) ;
-signal sra_result : std_logic_vector (15 downto 0) ;
-signal rcfa_result: std_logic_vector (15 downto 0) ;
+signal or_result  : std_logic_vector (7 downto 0) ;
+signal and_result : std_logic_vector (7 downto 0) ;
+signal xor_result : std_logic_vector (7 downto 0) ;
+signal srl_result : std_logic_vector (7 downto 0) ;
+signal sra_result : std_logic_vector (7 downto 0) ;
+signal sla_result : std_logic_vector (7 downto 0) ;
+signal rr_result  : std_logic_vector (7 downto 0) ;
+signal rl_result  : std_logic_vector (7 downto 0) ;
+signal rcfa_result: std_logic_vector (7 downto 0) ;
 
 begin
+
 -- Instantiate the or , using component 
     or_comp : or_GB
         port map ( A => in1 , B => in2, Y => or_result ) ;
-        
 -- Instantiate the and , using component 
     and_comp : and_GB
         port map ( A => in1 , B => in2, Y => and_result ) ;       
 -- Instantiate the xor , using component 
     xor_comp : xor_GB
         port map ( A => in1 , B => in2, Y => xor_result ) ; 
-
--- Instantiate the logical left shift , using component 
-    sll_comp : sll_GB
-        port map ( A => in1, SHIFT_AMT => in2(3 downto 0), Y => sll_result ) ; 
-
 -- Instantiate the logical right shift , using component 
     srl_comp : srl_GB
-        port map ( A => in1 , SHIFT_AMT => in2(3 downto 0), Y => srl_result ) ;
+        port map ( A => in1 , SHIFT_AMT => in2(2 downto 0), Y => srl_result ) ;
 -- Instantiate the arithmetic right shift , using component 
     sra_comp : sra_GB
-        port map ( A => in1 , SHIFT_AMT => in2(3 downto 0), Y => sra_result ) ;         
+        port map ( A => in1 , SHIFT_AMT => in2(2 downto 0), Y => sra_result ) ;
+--- Instantiate the arithmetic left shift , using component 
+    sla_comp : sra_GB
+        port map ( A => in1 , SHIFT_AMT => in2(2 downto 0), Y => sra_result ) ;
+-- Instantiate the arithmetic right shift , using component 
+    RippleCarryFullAdder_comp : RippleCarryFullAdder_GB 
+        port map ( A => in1 , B => in2,OP => control(0), Sum => rcfa_result ) ; 
+-- Instantiate the rotate right , using component 
+    rr_comp : rr_GB
+        port map ( A => in1, Y => rr_result ) ;
+--- Instantiate the rotate right , using component 
+    rl_comp : rl_GB
+        port map ( A => in1, Y => rl_result ) ;
 -- Use OP to control which operation to show / perform
-process(control, in1, in2, or_result, and_result, xor_result, sll_result, srl_result, sra_result, rcfa_result)
+process(control, in1, in2, or_result, and_result, xor_result, srl_result, sra_result, rcfa_result)
 begin
 	case control is
 		when "1000" => out1 <= or_result;  --OR
 		when "1010" => out1 <= and_result; --AND
 		when "1011" => out1 <= xor_result; --XOR
-		when "1100" => out1 <= sll_result; --SLL
 		when "1101" => out1 <= srl_result; --SRL
 		when "1110" => out1 <= sra_result; --SRA
 		when "0100" | "0101" => out1 <= rcfa_result; --RCFA		
