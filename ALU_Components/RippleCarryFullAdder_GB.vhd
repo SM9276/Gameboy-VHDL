@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-entity RippleCarryFullAdder is
+entity RippleCarryFullAdder_GB is
 port(
 --- Input ---    
     A : in std_logic_vector(7 downto 0);
@@ -10,13 +10,13 @@ port(
 --- Output ---
     Sum: out std_logic_vector(7 downto 0)    
  );
-end RippleCarryFullAdder;
+end RippleCarryFullAdder_GB;
 
-architecture oh_behave of RippleCarryFullAdder is
+architecture oh_behave of RippleCarryFullAdder_GB is
 signal carry : std_logic_vector(8 downto 0);
 signal xor_out: std_logic_vector(7 downto 0);
 
-component FullAdder port(
+component FullAdder_GB port(
 --- Input --- 
     A : in STD_LOGIC;
     B : in STD_LOGIC;
@@ -31,7 +31,7 @@ begin
     carry(0) <= OP;
     ripple: for i in 0 to 7 generate
         xor_out(i) <= B(i) xor OP;
-        FullAdder_inst : FullAdder
+        FullAdder_inst : FullAdder_GB
         port map(
             -- Inputs
             A => A(i),
