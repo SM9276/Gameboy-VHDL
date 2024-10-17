@@ -11,14 +11,14 @@
 library IEEE ;
 use IEEE . STD_LOGIC_1164 .ALL ;
 use IEEE . NUMERIC_STD .ALL;
-entity srlN is
+entity srl_GB is
 PORT (
 A : IN std_logic_vector (7 downto 0) ;
 SHIFT_AMT : IN std_logic_vector (2 downto 0) ;
 Y : OUT std_logic_vector (7 downto 0)
 ) ;
-end srlN ;
-architecture behavioral of srlN is
+end srl_GB ;
+architecture behavioral of srl_GB is
 -- create array of vectors to hold each of n shifters
 type shifty_array is array (7 downto 0) of std_logic_vector (7 downto 0) ;
 signal aSRL : shifty_array ;
