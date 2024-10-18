@@ -124,7 +124,39 @@ PORT (
 ) ;
 end Component;
 
+-- rlc component declaration
+Component rlc_GB is
+PORT (
+--- Input ---
+    A :    IN std_logic_vector (7 downto 0);
+    F :    IN std_logic_vector (7 downto 0);
+--- Output ---
+    Y :     OUT std_logic_vector (7 downto 0);
+    F_OUT : OUT std_logic_vector(7 downto 0)
+) ;
+end Component;
 
+-- rrc component declaration
+Component rrc_GB is
+PORT (
+--- Input ---
+    A :    IN std_logic_vector (7 downto 0);
+    F :    IN std_logic_vector (7 downto 0);
+--- Output ---
+    Y :     OUT std_logic_vector (7 downto 0);
+    F_OUT : OUT std_logic_vector(7 downto 0)
+) ;
+end Component;
+
+-- swap component declaration
+Component swap_GB is
+PORT (
+--- Input ---
+    A :    IN std_logic_vector (7 downto 0);
+--- Output ---
+    Y :     OUT std_logic_vector (7 downto 0)
+) ;
+end Component;
 
 -- this is done so you can see code with and without components .
 signal or_result  : std_logic_vector (7 downto 0) ;
@@ -135,8 +167,10 @@ signal sra_result : std_logic_vector (7 downto 0) ;
 signal sla_result : std_logic_vector (7 downto 0) ;
 signal rr_result  : std_logic_vector (7 downto 0) ;
 signal rl_result  : std_logic_vector (7 downto 0) ;
+signal rlc_result : std_logic_vector (7 downto 0) ;
+signal rrc_result : std_logic_vector (7 downto 0) ;
+signal swap_result: std_logic_vector (7 downto 0) ;
 signal rcfa_result: std_logic_vector (7 downto 0) ;
-
 begin
 
 -- Instantiate the or , using component 
@@ -166,6 +200,15 @@ begin
 --- Instantiate the rotate right , using component 
     rl_comp : rl_GB
         port map ( A => in1, Y => rl_result ) ;
+--- Instantiate the rotate right , using component 
+    rrc_comp : rrc_GB
+        port map ( A => in1, F => inflags, Y => rrc_result, F_OUT => outflags ) ;
+--- Instantiate the rotate right , using component 
+    rlc_comp : rlc_GB
+        port map ( A => in1, F => inflags, Y => rlc_result, F_OUT => outflags ) ;
+---- Instantiate the rotate right , using component 
+    swap_comp : swap_GB
+        port map ( A => in1, Y => swap_result ) ;
 -- Use OP to control which operation to show / perform
 process(control, in1, in2, or_result, and_result, xor_result, srl_result, sra_result, rcfa_result)
 begin
