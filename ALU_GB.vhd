@@ -67,7 +67,6 @@ Component srl_GB is
 PORT (
 --- Input ---
     A : IN std_logic_vector (7 downto 0) ;
-    SHIFT_AMT : IN std_logic_vector (2 downto 0) ;
 --- Output ---
     Y : OUT std_logic_vector (7 downto 0)
 ) ;
@@ -78,7 +77,16 @@ Component sra_GB is
 PORT (
 --- Input ---
     A : IN std_logic_vector (7 downto 0) ;
-    SHIFT_AMT : IN std_logic_vector (2 downto 0) ;
+--- Output ---    
+    Y : OUT std_logic_vector (7 downto 0)
+) ;
+end Component ;
+
+-- sla component declaration
+Component sla_GB is
+PORT (
+--- Input ---
+    A : IN std_logic_vector (7 downto 0) ;
 --- Output ---    
     Y : OUT std_logic_vector (7 downto 0)
 ) ;
@@ -142,13 +150,13 @@ begin
         port map ( A => in1 , B => in2, Y => xor_result ) ; 
 -- Instantiate the logical right shift , using component 
     srl_comp : srl_GB
-        port map ( A => in1 , SHIFT_AMT => in2(2 downto 0), Y => srl_result ) ;
+        port map ( A => in1 , Y => srl_result ) ;
 -- Instantiate the arithmetic right shift , using component 
     sra_comp : sra_GB
-        port map ( A => in1 , SHIFT_AMT => in2(2 downto 0), Y => sra_result ) ;
+        port map ( A => in1 , Y => sra_result ) ;
 --- Instantiate the arithmetic left shift , using component 
     sla_comp : sra_GB
-        port map ( A => in1 , SHIFT_AMT => in2(2 downto 0), Y => sra_result ) ;
+        port map ( A => in1 , Y => sra_result ) ;
 -- Instantiate the arithmetic right shift , using component 
     RippleCarryFullAdder_comp : RippleCarryFullAdder_GB 
         port map ( A => in1 , B => in2,OP => control(0), Sum => rcfa_result ) ; 
