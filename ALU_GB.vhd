@@ -155,8 +155,8 @@ begin
     sra_comp : sra_GB
         port map ( A => in1 , Y => sra_result ) ;
 --- Instantiate the arithmetic left shift , using component 
-    sla_comp : sra_GB
-        port map ( A => in1 , Y => sra_result ) ;
+    sla_comp : sla_GB
+        port map ( A => in1 , Y => sla_result ) ;
 -- Instantiate the arithmetic right shift , using component 
     RippleCarryFullAdder_comp : RippleCarryFullAdder_GB 
         port map ( A => in1 , B => in2,OP => control(0), Sum => rcfa_result ) ; 
