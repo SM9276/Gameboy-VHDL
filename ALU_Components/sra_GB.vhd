@@ -11,24 +11,16 @@
 library IEEE ;
 use IEEE . STD_LOGIC_1164 .ALL ;
 use IEEE . NUMERIC_STD .ALL;
-entity sraN is
-PORT (
-A : IN std_logic_vector (7 downto 0) ;
-SHIFT_AMT : IN std_logic_vector (2 downto 0) ;
-Y : OUT std_logic_vector (7 downto 0)
-) ;
-end sraN ;
-architecture behavioral of sraN is
--- create array of vectors to hold each of n shifters
-type shifty_array is array (7 downto 0) of std_logic_vector (7 downto 0) ;
-signal aSRL : shifty_array ;
+
+entity sra_GB is
+    port (
+        A : IN std_logic_vector (7 downto 0) ;
+        Y : OUT std_logic_vector (7 downto 0)
+    ) ;
+end sra_GB ;
+
+architecture behavioral of sra_GB is
 begin
-generateSRL : for i in 0 to 7 generate
-aSRL ( i ) (7 - i  downto 0 ) <= A (7  downto i) ;
-right_fill : if i > 0 generate
-    aSRL(i)(7 downto 8 - i) <= (others => A(7));
-end generate right_fill ;
-end generate generateSRL ;
-Y <= aSRL ( to_integer ( unsigned ( SHIFT_AMT ) ) ) ;
+    Y <= A(7) & A(7 downto 1);
 end behavioral ;
     
