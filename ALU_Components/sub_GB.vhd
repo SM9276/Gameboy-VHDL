@@ -12,8 +12,14 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 entity sub_GB is
     port (
-        A,B : IN std_logic_vector (7 downto 0);
-        Y, F_OUT : OUT std_logic_vector (7 downto 0)
+    --- Input ---    
+        A   : in std_logic_vector (7 downto 0);
+        B   : in std_logic_vector (7 downto 0);
+        Cin : in std_logic;
+    --- Output ---
+        Y : out std_logic_vector (7 downto 0);
+        Cout : out std_logic;
+        Hout : out std_logic
 ) ;
 end sub_GB ;
 
@@ -21,12 +27,13 @@ architecture structural of sub_GB is
 
 component RippleCarryFullAdder_GB port(
 --- Input ---    
-    A : in std_logic_vector(7 downto 0);
-    B : in std_logic_vector(7 downto 0);
+    A  : in std_logic_vector(7 downto 0);
+    B  : in std_logic_vector(7 downto 0);
     Cin: in std_logic;
 --- Output ---
-    Sum: out std_logic_vector(7 downto 0);
-    Cout: out std_logic );
+    Sum : out std_logic_vector(7 downto 0);
+    Cout: out std_logic;
+    Hout: out std_logic );
 end component; 
 
 signal B_Comp : std_logic_vector(7 downto 0);
@@ -37,9 +44,9 @@ begin
      port map(
         A => A,
         B => B,
-        Cin => '1',
+        Cin => Cin,
         Sum => Y,
-        Cout => F_OUT(4)
+        Cout => Cout,
+        Hout => Hout
     );
-    F_OUT(6) <= '1';
 end structural ;

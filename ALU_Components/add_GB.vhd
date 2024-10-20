@@ -12,10 +12,13 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 entity add_GB is port (
 --- Input ---    
-    A     : in  std_logic_vector (7 downto 0);
-    B     : in  std_logic_vector (7 downto 0);
-    Y     : OUT std_logic_vector (7 downto 0);
-    F_OUT : OUT std_logic_vector (7 downto 0)
+    A    : in  std_logic_vector (7 downto 0);
+    B    : in  std_logic_vector (7 downto 0);
+    Cin  : in  std_logic;
+    Y    : OUT std_logic_vector (7 downto 0);
+    Cout : OUT std_logic;
+    Hout : OUT std_logic
+
 ) ;
 end add_GB ;
 
@@ -38,10 +41,10 @@ begin
     --- Input ---    
         A => A,
         B => B,
-        Cin => '0',
+        Cin => Cin,
     --- Output ---
         Sum => Y,
-        Cout => F_OUT(4),
-        Hout => F_OUT(5)
+        Cout => Cout,
+        Hout => Hout
     );
 end structural ;
