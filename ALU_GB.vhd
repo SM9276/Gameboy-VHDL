@@ -146,6 +146,20 @@ PORT (
 ) ;
 end Component;
 
+-- swap component declaration
+Component add_GB is
+PORT (
+--- Input ---
+    A :    IN std_logic_vector (7 downto 0);
+    B :    IN std_logic_vector (7 downto 0);
+--- Output ---
+    Y :     OUT std_logic_vector (7 downto 0);
+    F_OUT : OUT std_logic_vector (7 downto 0)
+) ;
+end Component;
+
+
+
 signal or_result  : std_logic_vector (7 downto 0) ;
 signal and_result : std_logic_vector (7 downto 0) ;
 signal xor_result : std_logic_vector (7 downto 0) ;
@@ -156,9 +170,11 @@ signal rr_result  : std_logic_vector (7 downto 0) ;
 signal rl_result  : std_logic_vector (7 downto 0) ;
 signal rlc_result : std_logic_vector (7 downto 0) ;
 signal rrc_result : std_logic_vector (7 downto 0) ;
+signal add_result : std_logic_vector (7 downto 0) ;
 signal swap_result: std_logic_vector (7 downto 0) ;
 signal rcc_flag_result: std_logic_vector (7 downto 0) ;
 signal rcl_flag_result: std_logic_vector (7 downto 0) ;
+signal add_flag_result: std_logic_vector (7 downto 0) ; 
 
 begin
 
@@ -195,6 +211,10 @@ begin
 ---- Instantiate the rotate right , using component 
     swap_comp : swap_GB
         port map ( A => in1, Y => swap_result ) ;
+---- Instantiate the rotate right , using component 
+    add_comp : add_GB
+        port map ( A => in1, B=> in2, Y => add_result, F_OUT => add_flag_result) ;
+
 -- Use OP to control which operation to show / perform
 process(control, in1, in2, or_result, and_result, xor_result, srl_result, sra_result)
 begin

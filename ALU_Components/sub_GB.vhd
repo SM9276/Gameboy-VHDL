@@ -41,4 +41,5 @@ begin
         Sum => Y,
         Cout => F_OUT(4)
     );
+    F_OUT(6) <= '1';
 end structural ;

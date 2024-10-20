@@ -2,8 +2,8 @@
 -- Engineer : <Sergio Mercado Nunez > ( < sm9276@rit.edu >)
 --
 -- Create Date : <10/19/24 >
--- Design Name : and_GB
--- Module Name : and_GB - dataflow
+-- Design Name : add_GB
+-- Module Name : add_GB - dataflow
 -- Project Name : <GameBoy-VHDL>
 --
 -- Description : 8-bit bitwise ADD unit
@@ -32,6 +32,7 @@ component RippleCarryFullAdder_GB port(
     Hout: out std_logic);
 end component; 
 
+signal Y_OUT : std_logic_vector(7 downto 0);
 begin
     RippleCarryFullAdder_GB_inst: RippleCarryFullAdder_GB port map(
     --- Input ---    
