@@ -12,14 +12,18 @@
 library IEEE ;
 use IEEE . STD_LOGIC_1164 .ALL ;
 entity rrc_GB is
-PORT (
-    A, F : IN std_logic_vector (7 downto 0);
-    Y, F_OUT : OUT std_logic_vector (7 downto 0)
-) ;
+    port(
+    --- Input ---    
+        A   : in std_logic_vector (7 downto 0);
+        Cin : in std_logic;
+    --- Output ---    
+        Y    : out std_logic_vector (7 downto 0);
+        Cout : out std_logic
+    );
 end rrc_GB ;
 
 architecture dataflow of rrc_GB is
 begin
-    Y <= F(4) & A(7 downto 1);
-    F_OUT(4) <= A(0);
+    Y <= Cin & A(7 downto 1);
+    Cout <= A(0);
 end dataflow ;

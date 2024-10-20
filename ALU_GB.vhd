@@ -116,23 +116,23 @@ end Component;
 Component rlc_GB is
 PORT (
 --- Input ---
-    A :    IN std_logic_vector (7 downto 0);
-    F :    IN std_logic_vector (7 downto 0);
+    A   : IN std_logic_vector (7 downto 0);
+    Cin : IN std_logic;
 --- Output ---
-    Y :     OUT std_logic_vector (7 downto 0);
-    F_OUT : OUT std_logic_vector(7 downto 0)
+    Y    : OUT std_logic_vector (7 downto 0);
+    Cout : OUT std_logic
 ) ;
 end Component;
 
 -- rrc component declaration
 Component rrc_GB is
 PORT (
---- Input ---
-    A :    IN std_logic_vector (7 downto 0);
-    F :    IN std_logic_vector (7 downto 0);
+---- Input ---
+    A   : IN std_logic_vector (7 downto 0);
+    Cin : IN std_logic;
 --- Output ---
-    Y :     OUT std_logic_vector (7 downto 0);
-    F_OUT : OUT std_logic_vector(7 downto 0)
+    Y    : OUT std_logic_vector (7 downto 0);
+    Cout : OUT std_logic
 ) ;
 end Component;
 
@@ -146,15 +146,31 @@ PORT (
 ) ;
 end Component;
 
--- swap component declaration
+-- add component declaration
 Component add_GB is
 PORT (
 --- Input ---
-    A :    IN std_logic_vector (7 downto 0);
-    B :    IN std_logic_vector (7 downto 0);
+    A :  IN std_logic_vector (7 downto 0);
+    B :  IN std_logic_vector (7 downto 0);
+    Cin: IN std_logic;
 --- Output ---
     Y :     OUT std_logic_vector (7 downto 0);
-    F_OUT : OUT std_logic_vector (7 downto 0)
+    Cout : OUT std_logic;
+    Hout : OUT std_logic 
+) ;
+end Component;
+
+-- sub component declaration
+Component sub_GB is
+PORT (
+--- Input ---
+    A :  IN std_logic_vector (7 downto 0);
+    B :  IN std_logic_vector (7 downto 0);
+    Cin: IN std_logic;
+--- Output ---
+    Y :     OUT std_logic_vector (7 downto 0);
+    Cout : OUT std_logic;
+    Hout : OUT std_logic 
 ) ;
 end Component;
 
@@ -171,10 +187,12 @@ signal rl_result  : std_logic_vector (7 downto 0) ;
 signal rlc_result : std_logic_vector (7 downto 0) ;
 signal rrc_result : std_logic_vector (7 downto 0) ;
 signal add_result : std_logic_vector (7 downto 0) ;
+signal sub_result : std_logic_vector (7 downto 0) ;
 signal swap_result: std_logic_vector (7 downto 0) ;
 signal rcc_flag_result: std_logic_vector (7 downto 0) ;
 signal rcl_flag_result: std_logic_vector (7 downto 0) ;
 signal add_flag_result: std_logic_vector (7 downto 0) ; 
+signal sub_flag_result: std_logic_vector (7 downto 0) ; 
 
 begin
 
@@ -202,29 +220,35 @@ begin
 --- Instantiate the rotate right , using component 
     rl_comp : rl_GB
         port map ( A => in1, Y => rl_result ) ;
---- Instantiate the rotate right , using component 
+--- Instantiate the rotate right carry , using component 
     rrc_comp : rrc_GB
-        port map ( A => in1, F => inflags, Y => rrc_result, F_OUT => rcc_flag_result ) ;
---- Instantiate the rotate right , using component 
+        port map ( A => in1, Cin => inflags(4), Y => rrc_result, Cout => rcc_flag_result(4));
+--- Instantiate the rotate right carry, using component 
     rlc_comp : rlc_GB
-        port map ( A => in1, F => inflags, Y => rlc_result, F_OUT => rcl_flag_result) ;
----- Instantiate the rotate right , using component 
+        port map ( A => in1, Cin => inflags(4), Y => rrc_result, Cout => rcl_flag_result(4) ) ;
+---- Instantiate the swap , using component 
     swap_comp : swap_GB
         port map ( A => in1, Y => swap_result ) ;
----- Instantiate the rotate right , using component 
+---- Instantiate the add , using component 
     add_comp : add_GB
-        port map ( A => in1, B=> in2, Y => add_result, F_OUT => add_flag_result) ;
+        port map ( A => in1, B=> in2, Cin => inflags(4), Y => add_result, 
+                   Cout => add_flag_result(4), Hout => add_flag_result(5));
+---- Instantiate the add , using component 
+    sub_comp : sub_GB
+        port map ( A => in1, B=> in2, Cin => inflags(4), Y => sub_result, 
+                   Cout => add_flag_result(4), Hout => sub_flag_result(5));
+
 
 -- Use OP to control which operation to show / perform
 process(control, in1, in2, or_result, and_result, xor_result, srl_result, sra_result)
 begin
 	case control is
-		when "01000" => out1 <= or_result;  --OR
-		when "01010" => out1 <= and_result; --AND
-		when "01011" => out1 <= xor_result; --XOR
-		when "01101" => out1 <= srl_result; --SRL
-		when "01110" => out1 <= sra_result; --SRA
-		when others => out1 <= (others => '0'); --No selection
+		when "00000" => out1 <= or_result;  
+		when "00001" => out1 <= and_result; 
+		when "00010" => out1 <= xor_result; 
+		when "00011" => out1 <= srl_result; 
+		when "00100" => out1 <= sra_result; 
+		when others => out1 <= (others => '0');
 	end case;
 end process;                    
 end structural ;
