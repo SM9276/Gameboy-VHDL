@@ -92,18 +92,6 @@ PORT (
 ) ;
 end Component ;
 
--- RippleCarryFullAdder component declaration
-Component RippleCarryFullAdder_GB is
-PORT (
---- Input ---
-    A : IN std_logic_vector (7 downto 0);
-    B : IN std_logic_vector (7 downto 0);
-    OP : IN std_logic;
---- Output ---
-    Sum : OUT std_logic_vector (7 downto 0)
-) ;
-end Component;
-
 -- rl component declaration
 Component rl_GB is
 PORT (
@@ -158,7 +146,6 @@ PORT (
 ) ;
 end Component;
 
--- this is done so you can see code with and without components .
 signal or_result  : std_logic_vector (7 downto 0) ;
 signal and_result : std_logic_vector (7 downto 0) ;
 signal xor_result : std_logic_vector (7 downto 0) ;
@@ -170,7 +157,9 @@ signal rl_result  : std_logic_vector (7 downto 0) ;
 signal rlc_result : std_logic_vector (7 downto 0) ;
 signal rrc_result : std_logic_vector (7 downto 0) ;
 signal swap_result: std_logic_vector (7 downto 0) ;
-signal rcfa_result: std_logic_vector (7 downto 0) ;
+signal rcc_flag_result: std_logic_vector (7 downto 0) ;
+signal rcl_flag_result: std_logic_vector (7 downto 0) ;
+
 begin
 
 -- Instantiate the or , using component 
@@ -188,12 +177,9 @@ begin
 -- Instantiate the arithmetic right shift , using component 
     sra_comp : sra_GB
         port map ( A => in1 , Y => sra_result ) ;
---- Instantiate the arithmetic left shift , using component 
+-- Instantiate the arithmetic left shift , using component 
     sla_comp : sla_GB
         port map ( A => in1 , Y => sla_result ) ;
--- Instantiate the arithmetic right shift , using component 
-    RippleCarryFullAdder_comp : RippleCarryFullAdder_GB 
-        port map ( A => in1 , B => in2,OP => control(0), Sum => rcfa_result ) ; 
 -- Instantiate the rotate right , using component 
     rr_comp : rr_GB
         port map ( A => in1, Y => rr_result ) ;
@@ -202,23 +188,22 @@ begin
         port map ( A => in1, Y => rl_result ) ;
 --- Instantiate the rotate right , using component 
     rrc_comp : rrc_GB
-        port map ( A => in1, F => inflags, Y => rrc_result, F_OUT => outflags ) ;
+        port map ( A => in1, F => inflags, Y => rrc_result, F_OUT => rcc_flag_result ) ;
 --- Instantiate the rotate right , using component 
     rlc_comp : rlc_GB
-        port map ( A => in1, F => inflags, Y => rlc_result, F_OUT => outflags ) ;
+        port map ( A => in1, F => inflags, Y => rlc_result, F_OUT => rcl_flag_result) ;
 ---- Instantiate the rotate right , using component 
     swap_comp : swap_GB
         port map ( A => in1, Y => swap_result ) ;
 -- Use OP to control which operation to show / perform
-process(control, in1, in2, or_result, and_result, xor_result, srl_result, sra_result, rcfa_result)
+process(control, in1, in2, or_result, and_result, xor_result, srl_result, sra_result)
 begin
 	case control is
-		when "1000" => out1 <= or_result;  --OR
-		when "1010" => out1 <= and_result; --AND
-		when "1011" => out1 <= xor_result; --XOR
-		when "1101" => out1 <= srl_result; --SRL
-		when "1110" => out1 <= sra_result; --SRA
-		when "0100" | "0101" => out1 <= rcfa_result; --RCFA		
+		when "01000" => out1 <= or_result;  --OR
+		when "01010" => out1 <= and_result; --AND
+		when "01011" => out1 <= xor_result; --XOR
+		when "01101" => out1 <= srl_result; --SRL
+		when "01110" => out1 <= sra_result; --SRA
 		when others => out1 <= (others => '0'); --No selection
 	end case;
 end process;                    

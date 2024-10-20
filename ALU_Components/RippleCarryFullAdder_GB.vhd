@@ -15,12 +15,13 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity RippleCarryFullAdder_GB is
 port(
 --- Input ---    
-    A : in std_logic_vector(7 downto 0);
-    B : in std_logic_vector(7 downto 0);
+    A  : in std_logic_vector(7 downto 0);
+    B  : in std_logic_vector(7 downto 0);
     Cin: in std_logic;
 --- Output ---
-    Sum: out std_logic_vector(7 downto 0);
-    Cout: out std_logic
+    Sum : out std_logic_vector(7 downto 0);
+    Cout: out std_logic;
+    Hout: out std_logic
  );
 end RippleCarryFullAdder_GB;
 
@@ -54,5 +55,6 @@ begin
         );
     end generate;
     Cout <= carry(8);
+    Hout <= carry(4);
 end oh_behave;
 
