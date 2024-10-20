@@ -8,7 +8,6 @@
 --
 -- Description : 8-bit Rotate Left Carry unit
 -- ----------------------------------------------------
-
 library IEEE ;
 use IEEE . STD_LOGIC_1164 .ALL ;
 entity rlc_GB is
