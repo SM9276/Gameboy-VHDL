@@ -10,8 +10,9 @@
 -- ----------------------------------------------------
 
 library IEEE ;
-use IEEE . STD_LOGIC_1164 .ALL ;
-use IEEE . NUMERIC_STD .ALL;
+use IEEE.STD_LOGIC_1164.ALL ;
+use IEEE.NUMERIC_STD.ALL;
+use work.globals.all;
 
 entity ALU_GB is
 PORT (
@@ -22,7 +23,7 @@ PORT (
     inflags: IN std_logic_vector(7 downto 0);
     
 --- Output ---
-    out1 :       OUT std_logic_vector (7 downto 0);
+    out2 :       OUT std_logic_vector (7 downto 0);
     outflags:    OUT std_logic_vector (7 downto 0)
 ) ;
 end ALU_GB;
@@ -193,7 +194,7 @@ signal rcc_flag_result: std_logic_vector (7 downto 0) ;
 signal rcl_flag_result: std_logic_vector (7 downto 0) ;
 signal add_flag_result: std_logic_vector (7 downto 0) ; 
 signal sub_flag_result: std_logic_vector (7 downto 0) ; 
-
+signal out1: std_logic_vector(7 downto 0);
 begin
 
 -- Instantiate the or , using component 
@@ -245,18 +246,102 @@ begin
 	case control is
 		when "00000" => out1 <= add_result;  
 		when "00001" => out1 <= sub_result; 
-		when "00010" => out1 <= or_result; 
+		when "00010" => out1 <= or_result ; 
 		when "00011" => out1 <= xor_result; 
 		when "00100" => out1 <= and_result;
-		when "00101" => out1 <= rr_result; 
-		when "00110" => out1 <= rl_result; 
+		when "00101" => out1 <= rr_result ; 
+		when "00110" => out1 <= rl_result ; 
 		when "00111" => out1 <= rrc_result; 
 		when "01000" => out1 <= rlc_result;
 		when "01001" => out1 <= sla_result;
 		when "01010" => out1 <= sra_result; 
 		when "01011" => out1 <= srl_result; 
-		when "01100" => out1 <= swap_result; 
+		when "01100" => out1 <= swap_result;
 		when others => out1 <= (others => '0');
 	end case;
-end process;               
+	out2 <= out1;
+end process;              
+
+process(control,out1, add_flag_result, sub_flag_result, in1, inflags)
+    -- Include any other signals needed for flag computation
+begin
+    -- Initialize flags to zero
+    outflags <= (others => '0');
+
+    case control is
+        when "00000" =>  -- ADD operation
+            -- Set flags for ADD
+            if out1 = "0000000" then
+                outflags(Z_FLAG) <= '1';
+            else
+                outflags(Z_FLAG) <= '0';
+            end if;
+            outflags(N_FLAG)  <= '0';
+            outflags(H_FLAG) <= add_flag_result(5);  -- From add_GB component
+            outflags(C_FLAG)     <= add_flag_result(4);  -- From add_GB component
+
+        when "00001" =>  -- SUB operation
+            -- Set flags for SUB
+            if out1 = "00000000" then
+                outflags(Z_FLAG) <= '1';
+            else
+                outflags(Z_FLAG) <= '0';
+            end if;
+            outflags(N_FLAG)  <= '1';
+            outflags(H_FLAG) <= sub_flag_result(5);  -- From sub_GB component
+            outflags(C_FLAG)     <= sub_flag_result(4);  -- From sub_GB component
+
+        when "00010" =>  -- OR operation
+            -- Set flags for OR
+            if out1 = "00000000" then
+                outflags(Z_FLAG) <= '1';
+            else
+                outflags(Z_FLAG) <= '0';
+            end if;
+            outflags(N_FLAG)  <= '0';
+            outflags(H_FLAG) <= '0';
+            outflags(C_FLAG)     <= '0';
+
+        when "00011" =>  -- XOR operation
+            -- Set flags for XOR
+            if out1 = "00000000" then
+                outflags(Z_FLAG) <= '1';
+            else
+                outflags(Z_FLAG) <= '0';
+            end if;
+            outflags(N_FLAG)  <= '0';
+            outflags(H_FLAG) <= '0';
+            outflags(C_FLAG)     <= '0';
+
+        when "00100" =>  -- AND operation
+            -- Set flags for AND
+            if out1 = "00000000" then
+                outflags(Z_FLAG) <= '1';
+            else
+                outflags(Z_FLAG) <= '0';
+            end if;
+            outflags(N_FLAG) <= '0';
+            outflags(H_FLAG) <= '1';  -- H flag is set for AND
+            outflags(C_FLAG) <= '0';
+
+        -- Continue for other operations...
+
+        when "01001" =>  -- SLA operation
+            -- Set flags for SLA
+            if out1 = "00000000" then
+                outflags(Z_FLAG) <= '1';
+            else
+                outflags(Z_FLAG) <= '0';
+            end if;
+            outflags(N_FLAG)  <= '0';
+            outflags(H_FLAG) <= '0';
+            outflags(C_FLAG)     <= in1(7);  -- MSB before shift
+
+        -- Continue for rotate and shift operations...
+
+        when others =>
+            outflags <= (others => '0');
+    end case;
+end process;
+
 end structural ;

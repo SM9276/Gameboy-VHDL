@@ -11,9 +11,9 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 package globals is
-    constant Z_flag : integer := 7;
-    constant N_flag : integer := 6;
-    constant H_flag : integer := 5;
-    constant C_flag : integer := 4;
+    constant Z_FLAG : integer := 7;
+    constant N_FLAG : integer := 6;
+    constant H_FLAG : integer := 5;
+    constant C_FLAG : integer := 4;
 end;
 
