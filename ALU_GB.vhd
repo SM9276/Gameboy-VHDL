@@ -239,108 +239,92 @@ begin
         port map ( A => in1, B=> in2, Cin => inflags(4), Y => sub_result, 
                    Cout => sub_flag_result(4), Hout => sub_flag_result(5));
 
-
 -- Use OP to control which operation to show / perform
 process(control, in1, in2, add_result, sub_result, or_result, and_result, xor_result, srl_result, sra_result, sla_result, rr_result, rl_result, rrc_result, rlc_result, swap_result)
 begin
 	case control is
-		when "00000" => out1 <= add_result;  
-		when "00001" => out1 <= sub_result; 
-		when "00010" => out1 <= or_result ; 
-		when "00011" => out1 <= xor_result; 
-		when "00100" => out1 <= and_result;
-		when "00101" => out1 <= rr_result ; 
-		when "00110" => out1 <= rl_result ; 
-		when "00111" => out1 <= rrc_result; 
-		when "01000" => out1 <= rlc_result;
-		when "01001" => out1 <= sla_result;
-		when "01010" => out1 <= sra_result; 
-		when "01011" => out1 <= srl_result; 
-		when "01100" => out1 <= swap_result;
+		when ALU_ADD => out1 <= add_result;  
+		when ALU_SUB => out1 <= sub_result; 
+		when ALU_OR  => out1 <= or_result ; 
+		when ALU_XOR => out1 <= xor_result; 
+		when ALU_AND => out1 <= and_result;
+		when ALU_RR  => out1 <= rr_result ; 
+		when ALU_RL  => out1 <= rl_result ; 
+		when ALU_RRC => out1 <= rrc_result; 
+		when ALU_RLC => out1 <= rlc_result;
+		when ALU_SLA => out1 <= sla_result;
+		when ALU_SRA => out1 <= sra_result; 
+		when ALU_SRL => out1 <= srl_result; 
+		when ALU_SWAP=> out1 <= swap_result;
 		when others => out1 <= (others => '0');
 	end case;
 	out2 <= out1;
 end process;              
 
-process(control,out1, add_flag_result, sub_flag_result, in1, inflags)
-    -- Include any other signals needed for flag computation
+process(control,out1, add_flag_result, sub_flag_result, in1, in2)
+
+    function compute_z_flag(result : std_logic_vector(7 downto 0)) return std_logic is
+    begin
+        if result = "00000000" then
+            return '1';
+        else
+            return '0';
+        end if;
+    end function;
+
 begin
     -- Initialize flags to zero
     outflags <= (others => '0');
 
     case control is
-        when "00000" =>  -- ADD operation
+        when ALU_ADD =>  
             -- Set flags for ADD
-            if out1 = "0000000" then
-                outflags(Z_FLAG) <= '1';
-            else
-                outflags(Z_FLAG) <= '0';
-            end if;
-            outflags(N_FLAG)  <= '0';
-            outflags(H_FLAG) <= add_flag_result(5);  -- From add_GB component
-            outflags(C_FLAG)     <= add_flag_result(4);  -- From add_GB component
+            outflags(Z_FLAG) <= compute_z_flag(out1); 
+            outflags(N_FLAG) <= '0';
+            outflags(H_FLAG) <= add_flag_result(5);  
+            outflags(C_FLAG) <= add_flag_result(4);  
+            outflags(3 downto 0) <= "0000";
 
-        when "00001" =>  -- SUB operation
+        when ALU_SUB =>  
             -- Set flags for SUB
-            if out1 = "00000000" then
-                outflags(Z_FLAG) <= '1';
-            else
-                outflags(Z_FLAG) <= '0';
-            end if;
-            outflags(N_FLAG)  <= '1';
+            outflags(Z_FLAG) <= compute_z_flag(out1); 
+            outflags(N_FLAG) <= '1';
             outflags(H_FLAG) <= sub_flag_result(5);  -- From sub_GB component
-            outflags(C_FLAG)     <= sub_flag_result(4);  -- From sub_GB component
+            outflags(C_FLAG) <= sub_flag_result(4);  -- From sub_GB component
+            outflags(3 downto 0) <= "0000";
 
-        when "00010" =>  -- OR operation
+        when ALU_OR =>  -- OR operation
             -- Set flags for OR
-            if out1 = "00000000" then
-                outflags(Z_FLAG) <= '1';
-            else
-                outflags(Z_FLAG) <= '0';
-            end if;
-            outflags(N_FLAG)  <= '0';
+            outflags(Z_FLAG) <= compute_z_flag(out1); 
+            outflags(N_FLAG) <= '0';
             outflags(H_FLAG) <= '0';
-            outflags(C_FLAG)     <= '0';
+            outflags(C_FLAG) <= '0';
+            outflags(3 downto 0) <= "0000";
 
         when "00011" =>  -- XOR operation
             -- Set flags for XOR
-            if out1 = "00000000" then
-                outflags(Z_FLAG) <= '1';
-            else
-                outflags(Z_FLAG) <= '0';
-            end if;
+            outflags(Z_FLAG) <= compute_z_flag(out1); 
             outflags(N_FLAG)  <= '0';
             outflags(H_FLAG) <= '0';
             outflags(C_FLAG)     <= '0';
 
         when "00100" =>  -- AND operation
             -- Set flags for AND
-            if out1 = "00000000" then
-                outflags(Z_FLAG) <= '1';
-            else
-                outflags(Z_FLAG) <= '0';
-            end if;
+            outflags(Z_FLAG) <= compute_z_flag(out1); 
             outflags(N_FLAG) <= '0';
             outflags(H_FLAG) <= '1';  -- H flag is set for AND
             outflags(C_FLAG) <= '0';
 
-        -- Continue for other operations...
 
         when "01001" =>  -- SLA operation
             -- Set flags for SLA
-            if out1 = "00000000" then
-                outflags(Z_FLAG) <= '1';
-            else
-                outflags(Z_FLAG) <= '0';
-            end if;
-            outflags(N_FLAG)  <= '0';
+            outflags(Z_FLAG) <= compute_z_flag(out1); 
+            outflags(N_FLAG) <= '0';
             outflags(H_FLAG) <= '0';
-            outflags(C_FLAG)     <= in1(7);  -- MSB before shift
-
-        -- Continue for rotate and shift operations...
+            outflags(C_FLAG) <= in1(7);  -- MSB before shift
 
         when others =>
-            outflags <= (others => '0');
+            outflags <= (others => '0'); 
     end case;
 end process;
 
