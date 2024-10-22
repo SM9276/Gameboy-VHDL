@@ -196,24 +196,24 @@ begin
         port map ( A => in1, Y => rl_result ) ;
 --- Instantiate the rotate right carry , using component 
     rrc_comp : rrc_GB
-        port map ( A => in1, Cin => inflags(4), Y => rrc_result, Cout => rcc_flag_result(4));
+        port map ( A => in1, Cin => inflags(C_FLAG), Y => rrc_result, Cout => rcc_flag_result(C_FLAG));
 --- Instantiate the rotate right carry, using component 
     rlc_comp : rlc_GB
-        port map ( A => in1, Cin => inflags(4), Y => rlc_result, Cout => rcl_flag_result(4) ) ;
+        port map ( A => in1, Cin => inflags(C_FLAG), Y => rlc_result, Cout => rcl_flag_result(C_FLAG) ) ;
 ---- Instantiate the swap , using component 
     swap_comp : swap_GB
         port map ( A => in1, Y => swap_result ) ;
 ---- Instantiate the add , using component 
     add_comp : add_GB
-        port map ( A => in1, B=> in2, Cin => inflags(4), Y => add_result, 
-                   Cout => add_flag_result(4), Hout => add_flag_result(5));
+        port map ( A => in1, B=> in2, Cin => inflags(C_FLAG), Y => add_result, 
+                   Cout => add_flag_result(C_FLAG), Hout => add_flag_result(H_FLAG));
 ---- Instantiate the add , using component 
     sub_comp : sub_GB
-        port map ( A => in1, B=> in2, Cin => inflags(4), Y => sub_result, 
-                   Cout => sub_flag_result(4), Hout => sub_flag_result(5));
+        port map ( A => in1, B=> in2, Cin => inflags(C_FLAG), Y => sub_result, 
+                   Cout => sub_flag_result(C_FLAG), Hout => sub_flag_result(H_FLAG));
 
 -- Use OP to control which operation to show / perform
-process(control, in1, in2, add_result, sub_result, or_result, and_result, xor_result, srl_result, sra_result, sla_result, rr_result, rl_result, rrc_result, rlc_result, swap_result)
+process(all)
 begin
 	case control is
 		when ALU_ADD => out1 <= add_result;  
@@ -234,7 +234,7 @@ begin
     out2 <= out1;
 end process;              
 
-process(control,out1, add_flag_result, sub_flag_result, in1, in2)
+process(all)
 
     function compute_z_flag(result : std_logic_vector(7 downto 0)) return std_logic is
     begin
@@ -254,15 +254,15 @@ begin
             -- Set flags for ADD
             outflags(Z_FLAG) <= compute_z_flag(out1); 
             outflags(N_FLAG) <= '0';
-            outflags(H_FLAG) <= add_flag_result(5);  
-            outflags(C_FLAG) <= add_flag_result(4);  
+            outflags(H_FLAG) <= add_flag_result(H_FLAG);  
+            outflags(C_FLAG) <= add_flag_result(C_FLAG);  
 
         when ALU_SUB =>  
             -- Set flags for SUB
             outflags(Z_FLAG) <= compute_z_flag(out1); 
             outflags(N_FLAG) <= '1';
-            outflags(H_FLAG) <= sub_flag_result(5);  -- From sub_GB component
-            outflags(C_FLAG) <= sub_flag_result(4);  -- From sub_GB component
+            outflags(H_FLAG) <= sub_flag_result(H_FLAG);  
+            outflags(C_FLAG) <= sub_flag_result(C_FLAG);
 
         when ALU_OR =>  -- OR operation
             -- Set flags for OR
@@ -271,24 +271,27 @@ begin
             outflags(H_FLAG) <= '0';
             outflags(C_FLAG) <= '0';
 
-        when "00011" =>  -- XOR operation
+        when ALU_XOR =>  -- XOR operation
             -- Set flags for XOR
             outflags(Z_FLAG) <= compute_z_flag(out1); 
-            outflags(N_FLAG)  <= '0';
+            outflags(N_FLAG) <= '0';
             outflags(H_FLAG) <= '0';
+            outflags(C_FLAG) <= '0';
 
-        when "00100" =>  -- AND operation
+        when ALU_AND =>  -- AND operation
             -- Set flags for AND
             outflags(Z_FLAG) <= compute_z_flag(out1); 
             outflags(N_FLAG) <= '0';
-            outflags(H_FLAG) <= '1';  -- H flag is set for AND
+            outflags(H_FLAG) <= '1';  
+            outflags(C_FLAG) <= '0';
 
 
-        when "01001" =>  -- SLA operation
+        when ALU_SLA =>  -- SLA operation
             -- Set flags for SLA
             outflags(Z_FLAG) <= compute_z_flag(out1); 
             outflags(N_FLAG) <= '0';
             outflags(H_FLAG) <= '0';
+            outflags(C_FLAG) <= '0';
 
         when others =>
             outflags <= (others => '0'); 
