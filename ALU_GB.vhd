@@ -238,7 +238,7 @@ process(all)
     function compute_z_flag(result : std_logic_vector(7 downto 0)) return std_logic is
     begin
         return (not (result(7) or result(6) or result(5) or result(4) 
-                               or result(3) or result(2) or result(1) or result(0))) ;
+                or result(3) or result(2) or result(1) or result(0))) ;
     end function;
 
 begin
@@ -281,9 +281,54 @@ begin
             outflags(H_FLAG) <= '1';  
             outflags(C_FLAG) <= '0';
 
+        when ALU_RR =>  -- RR operation
+            -- Set flags for RR
+            outflags(Z_FLAG) <= compute_z_flag(out1); 
+            outflags(N_FLAG) <= '0';
+            outflags(H_FLAG) <= '0';  
+            outflags(C_FLAG) <= '0';
+
+        when ALU_RL =>  -- RL operation
+            -- Set flags for RL
+            outflags(Z_FLAG) <= compute_z_flag(out1); 
+            outflags(N_FLAG) <= '0';
+            outflags(H_FLAG) <= '0';  
+
+        when ALU_RRC =>  -- RRC operation
+            -- Set flags for RRC
+            outflags(Z_FLAG) <= compute_z_flag(out1); 
+            outflags(N_FLAG) <= '0';
+            outflags(H_FLAG) <= '0';  
+            outflags(C_FLAG) <= '0';
+        when ALU_RLC =>  -- RLC operation
+            -- Set flags for RLC
+            outflags(Z_FLAG) <= compute_z_flag(out1); 
+            outflags(N_FLAG) <= '0';
+            outflags(H_FLAG) <= '0';  
 
         when ALU_SLA =>  -- SLA operation
             -- Set flags for SLA
+            outflags(Z_FLAG) <= compute_z_flag(out1); 
+            outflags(N_FLAG) <= '0';
+            outflags(H_FLAG) <= '0';
+            outflags(C_FLAG) <= in1(7);
+
+        when ALU_SRA =>  -- SRA operation
+            -- Set flags for SRA
+            outflags(Z_FLAG) <= compute_z_flag(out1); 
+            outflags(N_FLAG) <= '0';
+            outflags(H_FLAG) <= '0';
+            outflags(C_FLAG) <= '0';
+
+        when ALU_SRL =>  -- SRL operation
+            -- Set flags for SRL
+            outflags(Z_FLAG) <= compute_z_flag(out1); 
+            outflags(N_FLAG) <= '0';
+            outflags(H_FLAG) <= '0';
+            outflags(C_FLAG) <= '0';
+
+        when ALU_SWAP =>  -- SWAP operation
+            -- Set flags for SWAP
             outflags(Z_FLAG) <= compute_z_flag(out1); 
             outflags(N_FLAG) <= '0';
             outflags(H_FLAG) <= '0';

@@ -8,3 +8,4 @@ I have been creating every instruction either through dataflow or structural.
 Ended up getting rid of ADC and SBC since they were both redundant.
 The first roadblock was creating the flags in the ALU. I was unsure if I should have the flags computed in the ALU itself or
 Instead of having it be calculated at the component level, I recently decided on having the flags in the ALU.
+Man these flags were giving me a big problem, I really wanted to create this ALU from pure combunational logic, and i finally achieved it
