@@ -17,153 +17,129 @@ use work.globals.all;
 entity ALU_GB is
 PORT (
 --- Input ---
-    in1:     IN std_logic_vector (7 downto 0) ;
-    in2:     IN std_logic_vector (7 downto 0) ;
-    control: IN std_logic_vector(4 downto 0);
-    inflags: IN std_logic_vector(7 downto 0);
-    
+    clk:     in std_logic;
+    rst:     in std_logic;
+    in1:     in std_logic_vector(7 downto 0);
+    in2:     in std_logic_vector(7 downto 0);
+    control: in std_logic_vector(4 downto 0);
+    inflags: in std_logic_vector(7 downto 0);
 --- Output ---
-    out2 :       OUT std_logic_vector (7 downto 0);
-    outflags:    OUT std_logic_vector (7 downto 0)
+    out2 :    out std_logic_vector (7 downto 0);
+    outflags: out std_logic_vector (7 downto 0)
 ) ;
 end ALU_GB;
 
 architecture structural of ALU_GB is
 
 -- or component declaration
-Component or_GB is
-PORT (
+Component or_GB is port(
 --- Input ---
-    A : IN std_logic_vector (7 downto 0) ;
-    B : IN std_logic_vector (7 downto 0) ;
+    A : in std_logic_vector (7 downto 0) ;
+    B : in std_logic_vector (7 downto 0) ;
 --- Output ---
-    Y : OUT std_logic_vector (7 downto 0)
-) ;
-end Component ;
+    Y : out std_logic_vector (7 downto 0));
+end Component;
 
 -- and component declaration
-Component and_GB is
-PORT (
+Component and_GB is port(
 --- Input ---
-    A : IN std_logic_vector (7 downto 0) ;
-    B : IN std_logic_vector (7 downto 0) ;
+    A : in std_logic_vector (7 downto 0) ;
+    B : in std_logic_vector (7 downto 0) ;
 --- Output ---
-    Y : OUT std_logic_vector (7 downto 0)
-) ;
-end Component ;
+    Y : out std_logic_vector (7 downto 0));
+end Component;
 
 -- xor component declaration
-Component xor_GB is
-PORT (
+Component xor_GB is port(
 --- Input ---
-    A : IN  std_logic_vector (7 downto 0) ;
-    B : IN  std_logic_vector (7 downto 0) ;
+    A : in  std_logic_vector (7 downto 0) ;
+    B : in  std_logic_vector (7 downto 0) ;
 --- Output ---
-    Y : OUT std_logic_vector (7 downto 0)
-) ;
-end Component ;
+    Y : out std_logic_vector (7 downto 0));
+end Component;
 
 -- srl component declaration
-Component srl_GB is
-PORT (
+Component srl_GB is port(
 --- Input ---
-    A : IN std_logic_vector (7 downto 0) ;
+    A : in std_logic_vector (7 downto 0) ;
 --- Output ---
-    Y : OUT std_logic_vector (7 downto 0)
-) ;
-end Component ;
+    Y : out std_logic_vector (7 downto 0));
+end Component;
 
 -- sra component declaration
-Component sra_GB is
-PORT (
+Component sra_GB is port(
 --- Input ---
-    A : IN std_logic_vector (7 downto 0) ;
+    A : in std_logic_vector (7 downto 0) ;
 --- Output ---    
-    Y : OUT std_logic_vector (7 downto 0)
-) ;
+    Y : out std_logic_vector (7 downto 0));
 end Component ;
 
 -- sla component declaration
-Component sla_GB is
-PORT (
+Component sla_GB is port(
 --- Input ---
-    A : IN std_logic_vector (7 downto 0) ;
+    A : in std_logic_vector (7 downto 0) ;
 --- Output ---    
-    Y : OUT std_logic_vector (7 downto 0)
-) ;
-end Component ;
+    Y : out std_logic_vector (7 downto 0));
+end Component;
 
 -- rl component declaration
-Component rl_GB is
-PORT (
+Component rl_GB is port(
 --- Input ---
-    A : IN std_logic_vector (7 downto 0);
+    A : in std_logic_vector (7 downto 0);
 --- Output ---
-    Y : OUT std_logic_vector (7 downto 0)
-) ;
+    Y : out std_logic_vector (7 downto 0));
 end Component;
 
 -- rr component declaration
-Component rr_GB is
-PORT (
+Component rr_GB is port(
 --- Input ---
-    A : IN std_logic_vector (7 downto 0);
+    A : in std_logic_vector (7 downto 0);
 --- Output ---
-    Y : OUT std_logic_vector (7 downto 0)
-) ;
+    Y : out std_logic_vector (7 downto 0));
 end Component;
 
 -- rlc component declaration
-Component rlc_GB is
-PORT (
+Component rlc_GB is port(
 --- Input ---
-    A   : IN std_logic_vector (7 downto 0);
-    Cin : IN std_logic;
+    A   : in std_logic_vector (7 downto 0);
+    Cin : in std_logic;
 --- Output ---
-    Y    : OUT std_logic_vector (7 downto 0);
-    Cout : OUT std_logic
-) ;
+    Y    : out std_logic_vector (7 downto 0);
+    Cout : out std_logic);
 end Component;
 
 -- rrc component declaration
-Component rrc_GB is
-PORT (
+Component rrc_GB is port(
 ---- Input ---
-    A   : IN std_logic_vector (7 downto 0);
-    Cin : IN std_logic;
+    A   : in std_logic_vector (7 downto 0);
+    Cin : in std_logic;
 --- Output ---
-    Y    : OUT std_logic_vector (7 downto 0);
-    Cout : OUT std_logic
-) ;
+    Y    : out std_logic_vector (7 downto 0);
+    Cout : out std_logic);
 end Component;
 
 -- swap component declaration
-Component swap_GB is
-PORT (
+Component swap_GB is port(
 --- Input ---
-    A :    IN std_logic_vector (7 downto 0);
+    A : in std_logic_vector (7 downto 0);
 --- Output ---
-    Y :     OUT std_logic_vector (7 downto 0)
-) ;
+    Y : out std_logic_vector (7 downto 0));
 end Component;
 
 -- add component declaration
-Component add_GB is
-PORT (
+Component add_GB is port(
 --- Input ---
-    A :  IN std_logic_vector (7 downto 0);
-    B :  IN std_logic_vector (7 downto 0);
-    Cin: IN std_logic;
+    A :  in std_logic_vector (7 downto 0);
+    B :  in std_logic_vector (7 downto 0);
+    Cin: in std_logic;
 --- Output ---
-    Y :     OUT std_logic_vector (7 downto 0);
-    Cout : OUT std_logic;
-    Hout : OUT std_logic 
-) ;
+    Y :    out std_logic_vector (7 downto 0);
+    Cout : out std_logic;
+    Hout : out std_logic);
 end Component;
 
 -- sub component declaration
-Component sub_GB is
-PORT (
+Component sub_GB is port(
 --- Input ---
     A :  IN std_logic_vector (7 downto 0);
     B :  IN std_logic_vector (7 downto 0);
@@ -171,11 +147,8 @@ PORT (
 --- Output ---
     Y :     OUT std_logic_vector (7 downto 0);
     Cout : OUT std_logic;
-    Hout : OUT std_logic 
-) ;
+    Hout : OUT std_logic );
 end Component;
-
-
 
 signal or_result  : std_logic_vector (7 downto 0) ;
 signal and_result : std_logic_vector (7 downto 0) ;
@@ -258,7 +231,7 @@ begin
 		when ALU_SWAP=> out1 <= swap_result;
 		when others => out1 <= (others => '0');
 	end case;
-	out2 <= out1;
+    out2 <= out1;
 end process;              
 
 process(control,out1, add_flag_result, sub_flag_result, in1, in2)
@@ -283,7 +256,6 @@ begin
             outflags(N_FLAG) <= '0';
             outflags(H_FLAG) <= add_flag_result(5);  
             outflags(C_FLAG) <= add_flag_result(4);  
-            outflags(3 downto 0) <= "0000";
 
         when ALU_SUB =>  
             -- Set flags for SUB
@@ -291,7 +263,6 @@ begin
             outflags(N_FLAG) <= '1';
             outflags(H_FLAG) <= sub_flag_result(5);  -- From sub_GB component
             outflags(C_FLAG) <= sub_flag_result(4);  -- From sub_GB component
-            outflags(3 downto 0) <= "0000";
 
         when ALU_OR =>  -- OR operation
             -- Set flags for OR
@@ -299,21 +270,18 @@ begin
             outflags(N_FLAG) <= '0';
             outflags(H_FLAG) <= '0';
             outflags(C_FLAG) <= '0';
-            outflags(3 downto 0) <= "0000";
 
         when "00011" =>  -- XOR operation
             -- Set flags for XOR
             outflags(Z_FLAG) <= compute_z_flag(out1); 
             outflags(N_FLAG)  <= '0';
             outflags(H_FLAG) <= '0';
-            outflags(C_FLAG)     <= '0';
 
         when "00100" =>  -- AND operation
             -- Set flags for AND
             outflags(Z_FLAG) <= compute_z_flag(out1); 
             outflags(N_FLAG) <= '0';
             outflags(H_FLAG) <= '1';  -- H flag is set for AND
-            outflags(C_FLAG) <= '0';
 
 
         when "01001" =>  -- SLA operation
@@ -321,7 +289,6 @@ begin
             outflags(Z_FLAG) <= compute_z_flag(out1); 
             outflags(N_FLAG) <= '0';
             outflags(H_FLAG) <= '0';
-            outflags(C_FLAG) <= in1(7);  -- MSB before shift
 
         when others =>
             outflags <= (others => '0'); 
