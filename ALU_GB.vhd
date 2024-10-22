@@ -14,8 +14,7 @@ use IEEE.STD_LOGIC_1164.ALL ;
 use IEEE.NUMERIC_STD.ALL;
 use work.globals.all;
 
-entity ALU_GB is
-PORT (
+entity ALU_GB is port(
 --- Input ---
     clk:     in std_logic;
     rst:     in std_logic;
@@ -238,11 +237,8 @@ process(all)
 
     function compute_z_flag(result : std_logic_vector(7 downto 0)) return std_logic is
     begin
-        if result = "00000000" then
-            return '1';
-        else
-            return '0';
-        end if;
+        return (not (result(7) or result(6) or result(5) or result(4) 
+                               or result(3) or result(2) or result(1) or result(0))) ;
     end function;
 
 begin
