@@ -16,8 +16,6 @@ use work.globals.all;
 
 entity ALU_GB is port(
 --- Input ---
-    clk:     in std_logic;
-    rst:     in std_logic;
     in1:     in std_logic_vector(7 downto 0);
     in2:     in std_logic_vector(7 downto 0);
     control: in std_logic_vector(4 downto 0);
@@ -162,8 +160,8 @@ signal rrc_result : std_logic_vector (7 downto 0) ;
 signal add_result : std_logic_vector (7 downto 0) ;
 signal sub_result : std_logic_vector (7 downto 0) ;
 signal swap_result: std_logic_vector (7 downto 0) ;
-signal rcc_flag_result: std_logic_vector (7 downto 0) ;
-signal rcl_flag_result: std_logic_vector (7 downto 0) ;
+signal rrc_flag_result: std_logic_vector (7 downto 0) ;
+signal rlc_flag_result: std_logic_vector (7 downto 0) ;
 signal add_flag_result: std_logic_vector (7 downto 0) ; 
 signal sub_flag_result: std_logic_vector (7 downto 0) ; 
 signal out1: std_logic_vector(7 downto 0);
@@ -195,10 +193,10 @@ begin
         port map ( A => in1, Y => rl_result ) ;
 --- Instantiate the rotate right carry , using component 
     rrc_comp : rrc_GB
-        port map ( A => in1, Cin => inflags(C_FLAG), Y => rrc_result, Cout => rcc_flag_result(C_FLAG));
+        port map ( A => in1, Cin => inflags(C_FLAG), Y => rrc_result, Cout => rrc_flag_result(C_FLAG));
 --- Instantiate the rotate right carry, using component 
     rlc_comp : rlc_GB
-        port map ( A => in1, Cin => inflags(C_FLAG), Y => rlc_result, Cout => rcl_flag_result(C_FLAG) ) ;
+        port map ( A => in1, Cin => inflags(C_FLAG), Y => rlc_result, Cout => rlc_flag_result(C_FLAG) ) ;
 ---- Instantiate the swap , using component 
     swap_comp : swap_GB
         port map ( A => in1, Y => swap_result ) ;
@@ -212,7 +210,7 @@ begin
                    Cout => sub_flag_result(C_FLAG), Hout => sub_flag_result(H_FLAG));
 
 -- Use OP to control which operation to show / perform
-process(all)
+process(control, out1, in1, in2, add_result, sub_result, or_result, and_result, xor_result, srl_result, sra_result, sla_result, rr_result, rl_result, rrc_result, rlc_result, swap_result)
 begin
 	case control is
 		when ALU_ADD => out1 <= add_result;  
@@ -233,7 +231,7 @@ begin
     out2 <= out1;
 end process;              
 
-process(all)
+process(control, out1, in1, in2, add_result, sub_result, or_result, and_result, xor_result, srl_result, sra_result, sla_result, rr_result, rl_result, rrc_result, rlc_result, swap_result, add_flag_result, sub_flag_result, rrc_flag_result, rlc_flag_result )
 
     function compute_z_flag(result : std_logic_vector(7 downto 0)) return std_logic is
     begin
@@ -299,12 +297,13 @@ begin
             outflags(Z_FLAG) <= compute_z_flag(out1); 
             outflags(N_FLAG) <= '0';
             outflags(H_FLAG) <= '0';  
-            outflags(C_FLAG) <= '0';
+            outflags(C_FLAG) <= rrc_flag_result(C_FLAG);
         when ALU_RLC =>  -- RLC operation
             -- Set flags for RLC
             outflags(Z_FLAG) <= compute_z_flag(out1); 
             outflags(N_FLAG) <= '0';
             outflags(H_FLAG) <= '0';  
+            outflags(C_FLAG) <= rlc_flag_result(C_FLAG);
 
         when ALU_SLA =>  -- SLA operation
             -- Set flags for SLA
