@@ -231,18 +231,17 @@ begin
     out2 <= out1;
 end process;              
 
-process(control, out1, in1, in2, add_result, sub_result, or_result, and_result, xor_result, srl_result, sra_result, sla_result, rr_result, rl_result, rrc_result, rlc_result, swap_result, add_flag_result, sub_flag_result, rrc_flag_result, rlc_flag_result )
 
+process(control, out1, in1, in2, add_result, sub_result, or_result, and_result, xor_result, srl_result, sra_result, sla_result, rr_result, rl_result, rrc_result, rlc_result, swap_result, add_flag_result, sub_flag_result, rrc_flag_result, rlc_flag_result )
     function compute_z_flag(result : std_logic_vector(7 downto 0)) return std_logic is
     begin
         return (not (result(7) or result(6) or result(5) or result(4) 
                 or result(3) or result(2) or result(1) or result(0))) ;
     end function;
-
 begin
     -- Initialize flags to zero
     outflags <= (others => '0');
-
+    
     case control is
         when ALU_ADD =>  
             -- Set flags for ADD

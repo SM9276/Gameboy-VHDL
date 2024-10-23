@@ -16,12 +16,10 @@ entity dda_GB is port (
     B    : in std_logic_vector (7 downto 0);
     Cin  : in std_logic;
     Hin  : in std_logic; 
+    Nin  : in std_logic;
 --- Output ---    
     Y    : OUT std_logic_vector (7 downto 0);
-    Cout : OUT std_logic;
-    Hout : OUT std_logic
-
-) ;
+    Cout : OUT std_logic);
 end dda_GB ;
 
 architecture structural of dda_GB is
