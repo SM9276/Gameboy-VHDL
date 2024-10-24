@@ -24,7 +24,44 @@ end dda_GB ;
 
 architecture structural of dda_GB is
 
-begin
+    component greaterthen port(
+    --- Input ---
+        A : in std_logic_vector(3 downto 0);
+    --- Output ---
+        Y : out std_logic);
+    end component;
+    
+    component RippleCarryFullAdder_GB port(
+    --- Input ---    
+        A  : in std_logic_vector(7 downto 0);
+        B  : in std_logic_vector(7 downto 0);
+        Cin: in std_logic;
+    --- Output ---
+        Sum : out std_logic_vector(7 downto 0);
+        Cout: out std_logic; 
+        Hout: out std_logic);
+    end component; 
 
+    signal upperNibble : std_logic_vector(3 downto 0);
+    signal lowerNibble : std_logic_vector(3 downto 0);
+    signal upperOver   : std_logic;
+    signal lowerOver   : std_logic;
+    signal not_B       : std_logic_vector(7 downto 0);
+     
+    signal upperNibble_addresult : std_logic_vector(7 downto 0);
+    signal lowerNibble_addresult : std_logic_vector(7 downto 0);
+    signal upperNibble_subresult : std_logic_vector(7 downto 0);
+    signal lowerNibble_subresult : std_logic_vector(7 downto 0);
+
+    begin
+        RippleCarryFullAdder_GB_inst: RippleCarryFullAdder_GB
+         port map(
+            A => A,
+            B => B,
+            Cin => Cin,
+            Sum => Sum,
+            Cout => Cout,
+            Hout => Hout
+        );
 end structural ;
 
