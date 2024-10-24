@@ -138,14 +138,27 @@ end Component;
 -- sub component declaration
 Component sub_GB is port(
 --- Input ---
-    A :  IN std_logic_vector (7 downto 0);
-    B :  IN std_logic_vector (7 downto 0);
-    Cin: IN std_logic;
+    A :  in std_logic_vector (7 downto 0);
+    B :  in std_logic_vector (7 downto 0);
+    Cin: in std_logic;
 --- Output ---
-    Y :     OUT std_logic_vector (7 downto 0);
-    Cout : OUT std_logic;
-    Hout : OUT std_logic );
+    Y    : out std_logic_vector (7 downto 0);
+    Cout : out std_logic;
+    Hout : out std_logic );
 end Component;
+
+Component daa_GB is port(
+--- Input ---
+    A :  in std_logic_vector (7 downto 0);
+    Cin: in std_logic;
+    Hin: in std_logic;
+    Nin: in std_logic;
+--- Output ---
+    Y    : out std_logic_vector (7 downto 0);
+    Cout : out std_logic);
+end Component;
+
+
 
 signal or_result  : std_logic_vector (7 downto 0) ;
 signal and_result : std_logic_vector (7 downto 0) ;
@@ -159,11 +172,13 @@ signal rlc_result : std_logic_vector (7 downto 0) ;
 signal rrc_result : std_logic_vector (7 downto 0) ;
 signal add_result : std_logic_vector (7 downto 0) ;
 signal sub_result : std_logic_vector (7 downto 0) ;
+signal daa_result : std_logic_vector (7 downto 0) ;
 signal swap_result: std_logic_vector (7 downto 0) ;
 signal rrc_flag_result: std_logic_vector (7 downto 0) ;
 signal rlc_flag_result: std_logic_vector (7 downto 0) ;
 signal add_flag_result: std_logic_vector (7 downto 0) ; 
 signal sub_flag_result: std_logic_vector (7 downto 0) ; 
+signal daa_flag_result: std_logic_vector (7 downto 0) ;
 signal out1: std_logic_vector(7 downto 0);
 begin
 
@@ -208,9 +223,14 @@ begin
     sub_comp : sub_GB
         port map ( A => in1, B=> in2, Cin => inflags(C_FLAG), Y => sub_result, 
                    Cout => sub_flag_result(C_FLAG), Hout => sub_flag_result(H_FLAG));
+---- Instantiate the daa , using component 
+    daa_comp : daa_GB
+        port map ( A => in1, Cin => inflags(C_FLAG), Hin => inflags(H_FLAG), Nin => inflags(N_FLAG),  Y => daa_result, 
+                   Cout => daa_flag_result(C_FLAG) );
+
 
 -- Use OP to control which operation to show / perform
-process(control, out1, in1, in2, add_result, sub_result, or_result, and_result, xor_result, srl_result, sra_result, sla_result, rr_result, rl_result, rrc_result, rlc_result, swap_result)
+process(control, out1, in1, in2, add_result, sub_result, or_result, and_result, xor_result, srl_result, sra_result, sla_result, rr_result, rl_result, rrc_result, rlc_result, swap_result, daa_result)
 begin
 	case control is
 		when ALU_ADD => out1 <= add_result;  
@@ -225,6 +245,7 @@ begin
 		when ALU_SLA => out1 <= sla_result;
 		when ALU_SRA => out1 <= sra_result; 
 		when ALU_SRL => out1 <= srl_result; 
+		when ALU_DAA => out1 <= daa_result; 
 		when ALU_SWAP=> out1 <= swap_result;
 		when others => out1 <= (others => '0');
 	end case;
@@ -232,7 +253,7 @@ begin
 end process;              
 
 
-process(control, out1, in1, in2, add_result, sub_result, or_result, and_result, xor_result, srl_result, sra_result, sla_result, rr_result, rl_result, rrc_result, rlc_result, swap_result, add_flag_result, sub_flag_result, rrc_flag_result, rlc_flag_result )
+process(control, out1, in1, in2, add_result, sub_result, or_result, and_result, xor_result, srl_result, sra_result, sla_result, rr_result, rl_result, rrc_result, rlc_result, swap_result, add_flag_result, sub_flag_result, rrc_flag_result, rlc_flag_result, daa_result )
     function compute_z_flag(result : std_logic_vector(7 downto 0)) return std_logic is
     begin
         return (not (result(7) or result(6) or result(5) or result(4) 

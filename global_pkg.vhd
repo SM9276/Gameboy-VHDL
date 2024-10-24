@@ -30,5 +30,6 @@ package globals is
     constant ALU_SRA : std_logic_vector := "01010";
     constant ALU_SRL : std_logic_vector := "01011";
     constant ALU_SWAP: std_logic_vector := "01100";
+    constant ALU_DAA : std_logic_vector := "01101";
 end;
 

@@ -10,19 +10,18 @@
 -- ----------------------------------------------------
 library IEEE;
 use IEEE.std_logic_1164.all;
-entity dda_GB is port (
+entity daa_GB is port (
 --- Input ---    
     A    : in std_logic_vector (7 downto 0);
-    B    : in std_logic_vector (7 downto 0);
     Cin  : in std_logic;
     Hin  : in std_logic; 
     Nin  : in std_logic;
 --- Output ---    
     Y    : OUT std_logic_vector (7 downto 0);
     Cout : OUT std_logic);
-end dda_GB ;
+end daa_GB ;
 
-architecture structural of dda_GB is
+architecture structural of daa_GB is
 
     component greaterthen port(
     --- Input ---
@@ -31,37 +30,55 @@ architecture structural of dda_GB is
         Y : out std_logic);
     end component;
     
-    component RippleCarryFullAdder_GB port(
+    component add6 port(
     --- Input ---    
-        A  : in std_logic_vector(7 downto 0);
-        B  : in std_logic_vector(7 downto 0);
-        Cin: in std_logic;
+        A  : in std_logic_vector(3 downto 0);
+        op : in std_logic;
     --- Output ---
-        Sum : out std_logic_vector(7 downto 0);
-        Cout: out std_logic; 
-        Hout: out std_logic);
+        Y   : out std_logic_vector(3 downto 0);
+        Cout: out std_logic);
     end component; 
 
     signal upperNibble : std_logic_vector(3 downto 0);
     signal lowerNibble : std_logic_vector(3 downto 0);
+
     signal upperOver   : std_logic;
     signal lowerOver   : std_logic;
-    signal not_B       : std_logic_vector(7 downto 0);
-     
-    signal upperNibble_addresult : std_logic_vector(7 downto 0);
-    signal lowerNibble_addresult : std_logic_vector(7 downto 0);
-    signal upperNibble_subresult : std_logic_vector(7 downto 0);
-    signal lowerNibble_subresult : std_logic_vector(7 downto 0);
 
+    signal upperresult : std_logic_vector(3 downto 0);
+    signal lowerresult : std_logic_vector(3 downto 0);
+
+    signal upperCout   : std_logic;
+    signal lowerCout   : std_logic;
+    signal upper_out : std_logic_vector(3 downto 0);
+    signal lower_out : std_logic_vector(3 downto 0);
     begin
-        RippleCarryFullAdder_GB_inst: RippleCarryFullAdder_GB
-         port map(
-            A => A,
-            B => B,
-            Cin => Cin,
-            Sum => Sum,
-            Cout => Cout,
-            Hout => Hout
-        );
-end structural ;
+        uppernibble <= A(7 downto 4);
+        lowernibble <= A(3 downto 0);
+        
+        lower_gt: greaterthen
+         port map( A => lowerNibble, Y => lowerOver );
+        upper_gt: greaterthen
+         port map( A => upperNibble, Y => upperOver );
+
+        lowerAdd6 : add6
+         port map( A => lowerNibble, op => Nin, Y => lowerresult, Cout => lowerCout);
+        upperAdd6 : add6
+         port map( A => upperNibble, op => Nin, Y => upperresult, Cout => upperCout);
+        
+    -- Select adjusted or unmodified nibbles for the final output
+         -- Conditional assignment for the upper nibble
+    upper_out <= upperResult when (upperOver = '1' or Cin = '1' or lowerCout = '1') else upperNibble;
+
+    -- Conditional assignment for the lower nibble
+    lower_out <= lowerResult when (lowerOver = '1' or Hin = '1') else lowerNibble;
+
+    -- Concatenate the two adjusted nibbles for the final output
+    Y <= upper_out & lower_out;
+
+    -- Final carry-out from the upper nibble
+    Cout <= uppercout;
+
+
+end structural ;    
 
