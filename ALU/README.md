@@ -85,7 +85,7 @@ The ALU updates the following flags based on the operation result:
 ---
 
 **Author**: Sergio Mercado Nunez (<SM9276@rit.edu>)  
-**Date**: 10/13/2024  
+**Date**: 10/13/2024 - 10/24/2024  
 **Project**: GameBoy-VHDL
 
 ---
