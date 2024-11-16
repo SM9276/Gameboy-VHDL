@@ -18,13 +18,13 @@ entity RegisterFile is port (
         clk_n	: in std_logic;
         rst     : in std_logic;
 		we		: in std_logic;
-		Addr1	: in std_logic_vector(4 downto 0); --read address 1
-		Addr2	: in std_logic_vector(4 downto 0); --read address 2
-		Addr3	: in std_logic_vector(4 downto 0); --write address
-		wd		: in std_logic_vector(31 downto 0);      --write data, din
+		Addr1	: in std_logic_vector(3 downto 0); --read address 1
+		Addr2	: in std_logic_vector(3 downto 0); --read address 2
+		Addr3	: in std_logic_vector(3 downto 0); --write address
+		wd		: in std_logic_vector(15 downto 0); --write data, din
 ---- Outputs ------
-		RD1		: out std_logic_vector(31 downto 0);     --Read from Addr1
-		RD2		: out std_logic_vector(31 downto 0)      --Read from Addr2
+		RD1		: out std_logic_vector(15 downto 0); --Read from Addr1
+		RD2		: out std_logic_vector(15 downto 0) --Read from Addr2
 );
 end RegisterFile;
 
